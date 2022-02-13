@@ -9,5 +9,3 @@ A discord bot, that allows for stat tracking among friends and gamers in a serve
 - !add - add user to the tracking stats
 - !leaders - list top 10 users in the discord
 - !stat [user] - find stats for specific user
-
-test
