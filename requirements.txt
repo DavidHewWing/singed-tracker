@@ -1,0 +1,11 @@
+certifi==2021.10.8
+distlib==0.3.4
+dnspython==2.2.0
+filelock==3.5.0
+pipenv==2022.1.8
+platformdirs==2.5.0
+pymongo==4.0.1
+python-dotenv==0.19.2
+six==1.16.0
+virtualenv==20.13.1
+virtualenv-clone==0.5.7
