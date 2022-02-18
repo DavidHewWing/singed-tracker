@@ -1,14 +1,21 @@
 import os
-from mongo.mongo_controller import connectToMongoAndReturnClient
+from pprint import pprint
+
 from dotenv import load_dotenv
+
+from data.guild import Guild
+from data.user import User
+from mongo.mongo_controller import (addGuild, addUserToGuild, connectToMongoAndReturnClient,
+                                    deleteGuild, getGuildById)
 
 load_dotenv()
 
 MONGO_URI = os.getenv('MONGO_URI')
 
-def print_hi(name):
-    print(f'Hi, {name}') 
-
 if __name__ == '__main__':
-    connectToMongoAndReturnClient(MONGO_URI)
-    print_hi('GOT THEM')
+    mongoClient = connectToMongoAndReturnClient(MONGO_URI)
+    guild = Guild('123', 'andius', [])
+    user = User('1234', '2345', 'BeautifulBussy', 'cyeungster')
+    addGuild(mongoClient, guild)
+    result, guild = getGuildById(mongoClient, '123')
+    result = addUserToGuild(mongoClient, '123', user)
