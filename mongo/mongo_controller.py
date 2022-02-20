@@ -34,7 +34,6 @@ def deleteGuild(mongoClient: MongoClient, guildId: str):
     if (not(guildDoesExist(mongoClient, guildId))):
         pprint('Guild with id: ' + guildId + ' does not exists.')
         return False
-    
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
     try:
@@ -57,10 +56,7 @@ def getGuildById(mongoClient: MongoClient, guildId: str):
 
 
 def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
-    if (not(guildDoesExist(mongoClient, guildId))):
-        pprint('Guild with id: ' + guildId + ' does not exists.')
-        return False
-    
+    _, guild = getGuildById(mongoClient, guildId)
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
     query = { 'name' : guild.name}
@@ -73,4 +69,34 @@ def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
         pprint('An error occured when adding user to guild: ' + str(e))
         return False
 
-def deleteUserInGuild()
+def deleteUserInGuild(mongoClient: MongoClient, guildId: str, discordId: str):
+    _, guild = getGuildById(mongoClient, guildId)
+    masterDB = mongoClient.master
+    guildCollection = masterDB[guildId]
+    query = { 'name' : guild.name}
+    removeUser = { '$pull': { 'users' : {'discordId': discordId } } }
+    try:
+        result = guildCollection.update_one(query, removeUser)
+        if (result.modified_count == 0):
+            pprint('Could not find user with discord id: ' + discordId)
+            return False
+        pprint('Successfully removed user with discord id: ' + discordId)
+        return True
+    except Exception as e:
+        pprint('An error occured when deleting user from guild: ' + str(e))
+        return False
+
+def getUserInGuildByDiscordId(mongoClient: MongoClient, guildId: str, discordId: str):
+    _, guild = getGuildById(mongoClient, guildId)
+    masterDB = mongoClient.master
+    guildCollection = masterDB[guildId]
+    query = {'users.discordId': discordId}
+    try: 
+        result = guildCollection.find_one(query)
+        if (result == None):
+            pprint('Could not find user with discord id: ' + discordId)
+            return None, False
+        return result, True
+    except Exception as e:
+        pprint('An error occured when deleting user from guild: ' + str(e))
+        return None, False
