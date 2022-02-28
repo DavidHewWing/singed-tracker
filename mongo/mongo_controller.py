@@ -93,10 +93,16 @@ def getUserInGuildByDiscordId(mongoClient: MongoClient, guildId: str, discordId:
     query = {'users.discordId': discordId}
     try: 
         result = guildCollection.find_one(query)
-        if (result == None):
+        resultUser = None
+        for user in result['users']:
+            if user['discordId'] == discordId:
+                resultUser = user
+                break
+        if (result == None or resultUser == None):
             pprint('Could not find user with discord id: ' + discordId)
             return None, False
-        return result, True
+
+        return resultUser, True
     except Exception as e:
         pprint('An error occured when deleting user from guild: ' + str(e))
         return None, False

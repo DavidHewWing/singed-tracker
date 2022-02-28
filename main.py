@@ -13,7 +13,7 @@ load_dotenv()
 MONGO_URI = os.getenv('MONGO_URI')
 
 if __name__ == '__main__':
-    mongoClient = connectToMongoAndReturnClient(MONGO_URI)
+    # mongoClient = connectToMongoAndReturnClient(MONGO_URI)
     guild = Guild('123', 'andius', [])
     user = User('1234', '2345', 'BeautifulBussy', 'cyeungster')
     # addGuild(mongoClient, guild)

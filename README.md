@@ -16,8 +16,11 @@ A discord bot, that allows for stat tracking among friends and gamers in a serve
 ```
 python3 -m venv packages
 source packages/bin/activate
+export PYTHONPATH="${PYTHONPATH}:/path/to/project" (use `pwd` for MacOS to find the file path)
 pip3 install -r requirements.txt
 ```
+
+### 
 
 ### Adding Packages
 ```
