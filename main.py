@@ -1,3 +1,4 @@
+import json
 import os
 from pprint import pprint
 
@@ -8,7 +9,7 @@ from data.summoner import Summoner
 from data.user import User
 from mongo.mongo_controller import (addGuild, addUserToGuild, connectToMongoAndReturnClient,
                                     deleteGuild, getGuildById, deleteUserInGuild, getUserInGuildByDiscordId)
-from rito.rito_controller import getMatches, getSummonerBySummonerName
+from rito.rito_controller import getMatchData, getMatches, getSummonerBySummonerName
 from rito.rito_endpoint_helper import getRequestHeaders
 
 load_dotenv()
@@ -20,13 +21,18 @@ RITO_API_KEY = os.getenv('RITO_API_KEY')
 
 def ritoConnection():
     requestHeader = getRequestHeaders(RITO_API_KEY)
-    rawSummoner = getSummonerBySummonerName(RITO_URI, requestHeader, 'Hewyy')
+    rawSummoner = getSummonerBySummonerName(RITO_URI, requestHeader, 'psychsafety')
     print(rawSummoner)
     summoner = Summoner(rawSummoner['accountId'], rawSummoner['id'], rawSummoner['puuid'], rawSummoner['name'])
     matches = getMatches(RITO_REGION_BASE_URI, requestHeader, summoner.puuid)
-    user = User('discordId', 'cyeungster', summoner)
+    match = getMatchData(RITO_REGION_BASE_URI, matches[0], requestHeader)
     print(summoner)
     print(matches)
+
+    # print(json.dumps(match, indent=4, sort_keys=True))
+
+    with open("sample.json", "w") as outfile:
+        json.dump(match, outfile, indent=4, sort_keys=True)
 
 
 if __name__ == '__main__':

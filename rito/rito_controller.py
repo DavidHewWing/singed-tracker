@@ -1,8 +1,9 @@
 import datetime
 import requests
 
-from rito.rito_endpoint_helper import getMatchesEndpoint, getSummonerEndpoint
+from rito.rito_endpoint_helper import getMatchEndpoint, getMatchesEndpoint, getSummonerEndpoint
 
+# Retrieves the summoner info via summoner name.
 def getSummonerBySummonerName(riotURI: str, requestHeader, summonerName):
     summonerEndPoint = getSummonerEndpoint(summonerName)
     response = requests.get(riotURI + summonerEndPoint, headers=requestHeader)
@@ -14,6 +15,7 @@ def getSummonerBySummonerName(riotURI: str, requestHeader, summonerName):
     
     return response_json
 
+# Retrieves the games played in the last two hours
 def getMatches(riotURI: str, requestHeader, puuid):
     lastTwoHourDateTime = int((datetime.datetime.now() - datetime.timedelta(hours = 2)).timestamp())
     matchesEndpoint = getMatchesEndpoint(puuid)
@@ -25,6 +27,16 @@ def getMatches(riotURI: str, requestHeader, puuid):
         return validation 
     
     return response.json()
+
+# Retrieves the match data for a game
+def getMatchData(riotURI, matchId: str, requestHeader):
+    matchEndpoint = getMatchEndpoint(matchId)
+    response = requests.get(riotURI + matchEndpoint, headers=requestHeader)
+    validation = validateResponse(response.status_code)
+    if (validation['status_code'] != 200):
+        return validation
+    return response.json()
+
 
 def validateResponse(statusCode):
     if (statusCode == 400):
