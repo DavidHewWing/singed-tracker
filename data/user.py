@@ -1,9 +1,11 @@
 class User:
-    def __init__(self, discordId, leagueApiId, summonerName, discordName):
+    def __init__(self, discordId, discordName, summoner):
         self.discordId = discordId
-        self.leagueApiId = leagueApiId
-        self.summonerName = summonerName
         self.discordName = discordName
+        self.summoner = summoner
     
     def __str__(self):
-        return self.discordId + " " + self.leagueApiId + " " + self.summonerName + " " + self.discordName
+        return "discordId: " + self.discordId + " discordName: " + self.discordName + " summoner: " + str(self.summoner)
+
+    def setLastCheckedGameId(self, lastGamesIds):
+        self.lastGameIds = lastGamesIds
