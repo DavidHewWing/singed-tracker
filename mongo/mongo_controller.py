@@ -55,15 +55,15 @@ def getGuildById(mongoClient: MongoClient, guildId: str):
     return (True, Guild(guildId, document['name'], document['users']))
 
 
-def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
+async def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
     _, guild = getGuildById(mongoClient, guildId)
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
     query = { 'name' : guild.name}
-    newUsers = {'$push': {'users': user.__dict__}}
+    newUsers = {'$push': {'users': transform_to_dict(user)}}
     try: 
         guildCollection.update_one(query, newUsers)
-        pprint('Successfully inserted: ' + str(user))
+        pprint('Successfully inserted user with id: ' + str(user.discordId))
         return True
     except Exception as e:
         pprint('An error occured when adding user to guild: ' + str(e))
@@ -106,3 +106,19 @@ def getUserInGuildByDiscordId(mongoClient: MongoClient, guildId: str, discordId:
     except Exception as e:
         pprint('An error occured when deleting user from guild: ' + str(e))
         return None, False
+
+def transform_to_dict(obj):
+    if not  hasattr(obj,"__dict__"):
+        return obj
+    result = {}
+    for key, val in obj.__dict__.items():
+        if key.startswith("_"):
+            continue
+        element = []
+        if isinstance(val, list):
+            for item in val:
+                element.append(transform_to_dict(item))
+        else:
+            element = transform_to_dict(val)
+        result[key] = element
+    return result

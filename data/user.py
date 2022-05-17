@@ -5,7 +5,7 @@ class User:
         self.summoner = summoner
     
     def __str__(self):
-        return "discordId: " + self.discordId + " discordName: " + self.discordName + " summoner: " + str(self.summoner)
+        return "discordId: " + str(self.discordId) + " discordName: " + self.discordName + " summoner: " + str(self.summoner)
 
     def setLastCheckedGameId(self, lastGamesIds):
         self.lastGameIds = lastGamesIds

@@ -12,7 +12,7 @@ def getSummonerBySummonerName(riotURI: str, requestHeader, summonerName):
     if (validation['status_code'] != 200):
         return validation 
     response_json = response.json()
-    
+    response_json['status_code'] = 200
     return response_json
 
 # Retrieves the games played in the last two hours
@@ -26,7 +26,9 @@ def getMatches(riotURI: str, requestHeader, puuid):
     if (validation['status_code'] != 200):
         return validation 
     
-    return response.json()
+    response_json = response.json()
+    response_json['status_code'] = 200
+    return response_json
 
 # Retrieves the match data for a game
 def getMatchData(riotURI, matchId: str, requestHeader):
@@ -35,7 +37,10 @@ def getMatchData(riotURI, matchId: str, requestHeader):
     validation = validateResponse(response.status_code)
     if (validation['status_code'] != 200):
         return validation
-    return response.json()
+
+    response_json = response.json()
+    response_json['status_code'] = 200
+    return response_json
 
 
 def validateResponse(statusCode):
