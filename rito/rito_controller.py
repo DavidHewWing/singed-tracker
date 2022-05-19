@@ -27,7 +27,10 @@ def getMatches(riotURI: str, requestHeader, puuid):
         return validation 
     
     response_json = response.json()
-    response_json['status_code'] = 200
+    result = {
+        'response' : response_json,
+        'status_code' : 200
+    }
     return response_json
 
 # Retrieves the match data for a game
