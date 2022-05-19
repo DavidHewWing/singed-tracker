@@ -104,8 +104,25 @@ def getUserInGuildByDiscordId(mongoClient: MongoClient, guildId: str, discordId:
 
         return resultUser, True
     except Exception as e:
-        pprint('An error occured when deleting user from guild: ' + str(e))
+        pprint('An error occured when retreiving user from guild: ' + str(e))
         return None, False
+
+def getAllUsersInGuildNoPerfData(mongoClient: MongoClient, guildId):
+    _, guild = getGuildById(mongoClient, guildId)
+    masterDB = mongoClient.master
+    guildCollection = masterDB[guildId]
+    try: 
+        users = guildCollection.find({}, {'users' : { 'summoner': { 'performanceData' : 0 } }, 'guildId': 0, '_id': 0, 'name': 0})
+        return users, True
+    except Exception as e:
+        pprint('An error when getting all users: ' + str(e))
+        return None, False
+
+def getAllGuilds(mongoClient: MongoClient):
+    db = mongoClient.master
+    collectionList = db.list_collection_names()
+    collectionList.remove('guilds')
+    return collectionList
 
 def transform_to_dict(obj):
     if not  hasattr(obj,"__dict__"):
