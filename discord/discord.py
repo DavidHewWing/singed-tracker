@@ -37,11 +37,11 @@ def run_discord():
             mongoClient = connectToMongoAndReturnClient(MONGO_URI)
             summoner = Summoner(summonerData['accountId'], summonerData['id'], summonerData['puuid'], summonerName)
             user = User(discordUser.id, str(discordUser), summoner)
-            exists = guildDoesExist(mongoClient, str(ctx.guild.id))
-            guildAdded = addGuild(mongoClient, str(ctx.guild.id))
+            exists = guildDoesExist(mongoClient, f'{str(ctx.guild.id)}-{str(ctx.guild.name)}')
+            guildAdded = addGuild(mongoClient, f'{str(ctx.guild.id)}-{str(ctx.guild.name)}')
 
             if (guildAdded or exists):
-                added = addUserToGuild(mongoClient, str(ctx.guild.id), user)
+                added = addUserToGuild(mongoClient, f'{str(ctx.guild.id)}-{str(ctx.guild.name)}', user)
                 if (not(added)):
                     await ctx.send('Error when inserting to MongoDB')
                 else:
