@@ -13,9 +13,9 @@ MONGO_URI = os.getenv('MONGO_URI')
 
 if __name__ == '__main__':
     print('main.py is running!')
-    # run_discord()
-    mongoClient = connectToMongoAndReturnClient(MONGO_URI)
-    user = User('discId1', 'discName1', Summoner('12','23','34','name1'))
+    run_discord()
+    # mongoClient = connectToMongoAndReturnClient(MONGO_URI)
+    # user = User('discId1', 'discName1', Summoner('12','23','34','name1'))
     # addGuild(mongoClient, '123')
     # addUserToGuild(mongoClient, '123', user)
     # deleteGuild(mongoClient, '123')

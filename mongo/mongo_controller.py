@@ -97,6 +97,31 @@ def getAllGuilds(mongoClient: MongoClient):
     collectionList.remove('guilds')
     return collectionList
 
+def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summonerName: str, championPlayed: str):
+    masterDB = mongoClient.master
+    guildCollection = masterDB[guildId]
+    championPlayedField = 'summoner.championsPlayed.' + championPlayed
+    query = { 'summoner.summonerName' : summonerName } 
+    update = { '$inc' : {
+        'summoner.performanceData.totDeaths': perfData.totDeaths,
+        'summoner.performanceData.totKills': perfData.totKills,
+        'summoner.performanceData.totAssists': perfData.totAssists,
+        'summoner.performanceData.totCS': perfData.totCS,
+        'summoner.performanceData.totDamageTaken': perfData.totDamageTaken,
+        'summoner.performanceData.totTurretDamage': perfData.totTurretDamage,
+        'summoner.performanceData.totGoldEarned': perfData.totGoldEarned,
+        'summoner.performanceData.totVisionScore': perfData.totVisionScore,
+        'summoner.performanceData.totHealsOnTeammates': perfData.totHealsOnTeammates,
+        'summoner.performanceData.totTimeCCOthers': perfData.totTimeCCOthers,
+        'summoner.performanceData.totShieldingOthers': perfData.totShieldingOthers,
+        'summoner.performanceData.totGames': perfData.totGames,
+        championPlayedField : 1
+    } }
+    user = guildCollection.update_one(query, update)
+    
+    
+
+
 def transform_to_dict(obj):
     if not  hasattr(obj,"__dict__"):
         return obj
