@@ -20,6 +20,13 @@ export PYTHONPATH="${PYTHONPATH}:/path/to/project" (use `pwd` for MacOS to find 
 pip3 install -r requirements.txt
 ```
 
+```
+Windows
+python -m venv packages
+. packages/scripts/activate
+pip3 install -r requirements.txt
+```
+
 ### 
 
 ### Adding Packages
