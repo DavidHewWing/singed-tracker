@@ -7,7 +7,7 @@ import os
 
 from mongomock import MongoClient
 from data.performance_data import PerformanceData
-from mongo.mongo_controller import connectToMongoAndReturnClient, getAllGuilds, getAllUsersInGuildNoPerfData
+from mongo.mongo_controller import connectToMongoAndReturnClient, getAllGuilds, getAllUsersInGuildNoPerfData, updatePerformanceData
 from rito.rito_controller import getMatchData, getMatches
 from rito.rito_endpoint_helper import getRequestHeaders
 
@@ -25,7 +25,7 @@ def detectGamesForAllGuilds(mongoClient: MongoClient, playerThreshold):
         matchesWithFiveMembers = []
         matches = {}
         result, error = getAllUsersInGuildNoPerfData(mongoClient, guild)
-        users = list(result)[0]['users']
+        users = list(result)
         for user in users:
             currMatch = getMatches(RITO_REGION_BASE_URI, requestHeader, user['summoner']['puuid'])
             for matchId in currMatch:
@@ -41,6 +41,7 @@ def detectGamesForAllGuilds(mongoClient: MongoClient, playerThreshold):
                     'guildId': guild
                 }
                 matchesWithFiveMembers.append({matchId: entry})
+        print(matchesWithFiveMembers)
     return matchesWithFiveMembers
 
 # Gets performance data from a matches array
@@ -51,12 +52,14 @@ def getPerformanceData(mongoClient: MongoClient, matches):
 
 def getIndividualPerfomanceData(mongoClient: MongoClient, match):
     for matchId in match:
+        print(match)
         matchValue = match[matchId]
         data = getMatchData(RITO_REGION_BASE_URI, matchId, requestHeader)
         streamedData = [participant for participant in data['info']['participants'] if participant['summonerName'] in matchValue['participants']]
         playerDataForMatch = []
         for playerData in streamedData:
             championPlayed = playerData['championName']
+            summonerName = playerData['summonerName']
             tempPerfData = PerformanceData(
                 totDeaths = playerData['deaths'], 
                 totKills = playerData['kills'],
@@ -69,10 +72,10 @@ def getIndividualPerfomanceData(mongoClient: MongoClient, match):
                 totGoldEarned = playerData['goldEarned'],
                 totHealOnTeammates = playerData['totalHealsOnTeammates'],
                 totTimeCCOthers = playerData['timeCCingOthers'],
-                totShieldingOthers = playerData['totalDamageShieldedOnTeammates']
+                totShieldingOthers = playerData['totalDamageShieldedOnTeammates'],
+                totGames = 1
             )
-            print(championPlayed)
-            print(tempPerfData)
+            updatePerformanceData(mongoClient, match[matchId]['guildId'], tempPerfData, summonerName, championPlayed)
 
 if __name__ == '__main__':
     print('cronjob.py is running!')

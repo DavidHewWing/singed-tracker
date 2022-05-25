@@ -6,7 +6,7 @@ class Summoner:
         self.summonerId = summonerId
         self.puuid = puuid
         self.summonerName = summonerName
-        self.performanceData = PerformanceData(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        self.performanceData = PerformanceData(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     
     def __str__(self):
         return "accountId: " + self.accountId + " \n summonerId: " + self.summonerId + " \n puuid: " + self.puuid + "\n summonerName: " + self.summonerName + "\n peformanceData: " + str(self.performanceData)
