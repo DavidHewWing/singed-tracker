@@ -5,7 +5,6 @@ import discord
 from dotenv import load_dotenv
 
 from discord.ext import commands
-from data.guild import Guild
 from data.summoner import Summoner
 from data.user import User
 from mongo.mongo_controller import addGuild, addUserToGuild, connectToMongoAndReturnClient
@@ -42,7 +41,7 @@ def run_discord():
             guildAdded = addGuild(mongoClient, guild)
 
             if (guildAdded or exists):
-                added = await addUserToGuild(mongoClient, guild.guildId, user)
+                added = addUserToGuild(mongoClient, guild.guildId, user)
                 if (not(added)):
                     await ctx.send('Error when inserting to MongoDB')
                 else:

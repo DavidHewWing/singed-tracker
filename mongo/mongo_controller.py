@@ -1,7 +1,5 @@
-from asyncio import QueueEmpty
 from pprint import pprint
 
-from data.guild import Guild
 from data.user import User
 from pymongo import MongoClient
 
@@ -15,18 +13,17 @@ def connectToMongoAndReturnClient(mongoURI: str):
     pprint('Connected to Database with OK Result: ' + str(serverStatusResult['ok']))
     return client
 
-def addGuild(mongoClient: MongoClient, guild: Guild):
-    if (guildDoesExist(mongoClient, guild.guildId)):
-        pprint('Guild with id: ' + guild.guildId + ' already exists.')
+def addGuild(mongoClient: MongoClient, guildId: str):
+    if (guildDoesExist(mongoClient, guildId)):
+        pprint('Guild with id: ' + guildId + ' already exists.')
         return False
     
     masterDB = mongoClient.master
-    guildCollection = masterDB[guild.guildId]
     try: 
-        insertResult = guildCollection.insert_one(guild.__dict__)
+        masterDB.create_collection(guildId)
         return True
     except Exception as e:
-        pprint('An error occured while inserting: ' + str(e))
+        pprint('An error occured while adding a guild: ' + str(e))
         return False
 
 
@@ -43,26 +40,12 @@ def deleteGuild(mongoClient: MongoClient, guildId: str):
         pprint('An error occured when dropping Guild collection: ' + str(e))
         return False
 
-
-def getGuildById(mongoClient: MongoClient, guildId: str):
-    if (not(guildDoesExist(mongoClient, guildId))):
-        pprint('Guild with id: ' + guildId + ' does not exists.')
-        return (False, None)
-        
+def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
-    document = guildCollection.find_one()
-    return (True, Guild(guildId, document['name'], document['users']))
-
-
-async def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
-    _, guild = getGuildById(mongoClient, guildId)
-    masterDB = mongoClient.master
-    guildCollection = masterDB[guildId]
-    query = { 'name' : guild.name}
-    newUsers = {'$push': {'users': transform_to_dict(user)}}
+    userJson = transform_to_dict(user)
     try: 
-        guildCollection.update_one(query, newUsers)
+        guildCollection.insert_one(userJson)
         pprint('Successfully inserted user with id: ' + str(user.discordId))
         return True
     except Exception as e:
@@ -70,14 +53,12 @@ async def addUserToGuild(mongoClient: MongoClient, guildId: str, user: User):
         return False
 
 def deleteUserInGuild(mongoClient: MongoClient, guildId: str, discordId: str):
-    _, guild = getGuildById(mongoClient, guildId)
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
-    query = { 'name' : guild.name}
-    removeUser = { '$pull': { 'users' : {'discordId': discordId } } }
+    query = { 'discordId' : discordId}
     try:
-        result = guildCollection.update_one(query, removeUser)
-        if (result.modified_count == 0):
+        result = guildCollection.delete_one(query)
+        if (result.deleted_count == 0):
             pprint('Could not find user with discord id: ' + discordId)
             return False
         pprint('Successfully removed user with discord id: ' + discordId)
@@ -87,32 +68,24 @@ def deleteUserInGuild(mongoClient: MongoClient, guildId: str, discordId: str):
         return False
 
 def getUserInGuildByDiscordId(mongoClient: MongoClient, guildId: str, discordId: str):
-    _, guild = getGuildById(mongoClient, guildId)
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
-    query = {'users.discordId': discordId}
+    query = {'discordId': discordId}
     try: 
         result = guildCollection.find_one(query)
-        resultUser = None
-        for user in result['users']:
-            if user['discordId'] == discordId:
-                resultUser = user
-                break
-        if (result == None or resultUser == None):
+        if (result == None):
             pprint('Could not find user with discord id: ' + discordId)
             return None, False
-
-        return resultUser, True
+        return result, True
     except Exception as e:
         pprint('An error occured when retreiving user from guild: ' + str(e))
         return None, False
 
 def getAllUsersInGuildNoPerfData(mongoClient: MongoClient, guildId):
-    _, guild = getGuildById(mongoClient, guildId)
     masterDB = mongoClient.master
     guildCollection = masterDB[guildId]
     try: 
-        users = guildCollection.find({}, {'users' : { 'summoner': { 'performanceData' : 0 } }, 'guildId': 0, '_id': 0, 'name': 0})
+        users = guildCollection.find({}, { 'summoner': { 'performanceData' : 0 } , 'guildId': 0, '_id': 0, 'name': 0})
         return users, True
     except Exception as e:
         pprint('An error when getting all users: ' + str(e))
