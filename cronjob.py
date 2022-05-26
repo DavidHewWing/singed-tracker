@@ -7,7 +7,7 @@ import os
 
 from mongomock import MongoClient
 from data.performance_data import PerformanceData
-from mongo.mongo_controller import connectToMongoAndReturnClient, getAllGuilds, getAllUsersInGuildNoPerfData, updatePerformanceData
+from mongo.mongo_controller import connectToMongoAndReturnClient, getAllGuilds, getAllUsersInGuild, getAllUsersInGuildNoPerfData, updatePerformanceData
 from rito.rito_controller import getMatchData, getMatches
 from rito.rito_endpoint_helper import getRequestHeaders
 
