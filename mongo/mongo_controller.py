@@ -119,7 +119,15 @@ def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summ
     } }
     user = guildCollection.update_one(query, update)
     
-    
+def getAllUsersInGuild(mongoClient: MongoClient, guildId: str):
+    masterDB = mongoClient.master
+    guildCollection = masterDB[guildId]
+    try: 
+        users = guildCollection.find({})
+        return users, True
+    except Exception as e:
+        pprint('An error when getting all users: ' + str(e))
+        return None, False
 
 
 def transform_to_dict(obj):
