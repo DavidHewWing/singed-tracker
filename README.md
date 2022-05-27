@@ -27,7 +27,13 @@ python -m venv packages
 pip3 install -r requirements.txt
 ```
 
-### 
+### Deploying
+```
+Compute Engine SSH
+nohup python3 -u main.py &>> activity.log & [This runs the bot script in the back ground. Don't forget to put the main function in main.py]
+echo $! > save_pid.txt [saves the last PID, the one you just ran so you can stop it later]
+
+```
 
 ### Adding Packages
 ```
