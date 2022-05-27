@@ -12,17 +12,17 @@ from rito.rito_controller import getMatchData, getMatches
 from rito.rito_endpoint_helper import getRequestHeaders
 
 load_dotenv()
-MONGO_URI = os.getenv('MONGO_URI')
-RITO_URI = os.getenv('RITO_BASE_URI')
-RITO_REGION_BASE_URI = os.getenv('RITO_REGION_BASE_URI')
-RITO_API_KEY = os.getenv('RITO_API_KEY')
+MONGO_URI = os.environ.get('MONGO_URI') if os.getenv('MONGO_URI') == 'None' else os.getenv('MONGO_URI')
+RITO_URI = os.environ.get('RITO_BASE_URI') if os.getenv('RITO_BASE_URI') == 'None' else os.getenv('RITO_BASE_URI')
+RITO_REGION_BASE_URI = os.environ.get('RITO_REGION_BASE_URI') if os.getenv('RITO_REGION_BASE_URI') == 'None' else os.getenv('RITO_REGION_BASE_URI')
+RITO_API_KEY = os.environ.get('RITO_API_KEY') if os.getenv('RITO_API_KEY') == 'None' else os.getenv('RITO_API_KEY')
 requestHeader = getRequestHeaders(RITO_API_KEY)
 
 # Detects games in which there are 'playerThreshold' amount of players in the same game from the same guild
 def detectGamesForAllGuilds(mongoClient: MongoClient, playerThreshold):
     guilds = getAllGuilds(mongoClient)
+    matchesWithFiveMembers = []
     for guild in guilds:
-        matchesWithFiveMembers = []
         matches = {}
         result, error = getAllUsersInGuildNoPerfData(mongoClient, guild)
         users = list(result)
@@ -41,18 +41,18 @@ def detectGamesForAllGuilds(mongoClient: MongoClient, playerThreshold):
                     'guildId': guild
                 }
                 matchesWithFiveMembers.append({matchId: entry})
-        print(matchesWithFiveMembers)
     return matchesWithFiveMembers
 
 # Gets performance data from a matches array
 def getPerformanceData(mongoClient: MongoClient, matches):
     for match in matches:
-        matchData = getIndividualPerfomanceData(mongoClient, match)
+        getIndividualPerfomanceData(mongoClient, match)
+    return matches
+
 
 
 def getIndividualPerfomanceData(mongoClient: MongoClient, match):
     for matchId in match:
-        print(match)
         matchValue = match[matchId]
         data = getMatchData(RITO_REGION_BASE_URI, matchId, requestHeader)
         streamedData = [participant for participant in data['info']['participants'] if participant['summonerName'] in matchValue['participants']]
