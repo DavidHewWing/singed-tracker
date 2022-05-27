@@ -109,7 +109,7 @@ def run_discord():
             await ctx.send(f"```\n{table}\n```")
 
             await ctx.send('Temporary data visualization solution. Improvements made in the future.')
-            await ctx.send('Data is collected every hour.')
+            await ctx.send('Data is collected every 2 hours.')
 
     @bot.event
     async def on_command_error(ctx, error):
