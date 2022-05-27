@@ -33,6 +33,8 @@ Compute Engine SSH
 nohup python3 -u main.py &>> activity.log & [This runs the bot script in the back ground. Don't forget to put the main function in main.py]
 echo $! > save_pid.txt [saves the last PID, the one you just ran so you can stop it later]
 
+Cloud Function
+gcloud functions deploy run_cronjob --runtime python310 --trigger-http --allow-unauthenticated
 ```
 
 ### Adding Packages
