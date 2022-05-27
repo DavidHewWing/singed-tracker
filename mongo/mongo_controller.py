@@ -107,6 +107,7 @@ def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summ
         'summoner.performanceData.totKills': perfData.totKills,
         'summoner.performanceData.totAssists': perfData.totAssists,
         'summoner.performanceData.totCS': perfData.totCS,
+        'summoner.performanceData.totDPS': perfData.totDPS,
         'summoner.performanceData.totDamageTaken': perfData.totDamageTaken,
         'summoner.performanceData.totTurretDamage': perfData.totTurretDamage,
         'summoner.performanceData.totGoldEarned': perfData.totGoldEarned,
