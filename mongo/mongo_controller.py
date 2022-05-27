@@ -118,6 +118,7 @@ def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summ
         championPlayedField : 1
     } }
     user = guildCollection.update_one(query, update)
+    return user
     
 def getAllUsersInGuild(mongoClient: MongoClient, guildId: str):
     masterDB = mongoClient.master

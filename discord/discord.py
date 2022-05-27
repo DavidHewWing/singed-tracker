@@ -16,11 +16,11 @@ from rito.rito_endpoint_helper import getRequestHeaders
 def run_discord():
     load_dotenv()
 
-    TOKEN = os.getenv('DISCORD_TOKEN')
-    MONGO_URI = os.getenv('MONGO_URI')
-    RITO_URI = os.getenv('RITO_BASE_URI')
-    RITO_REGION_BASE_URI = os.getenv('RITO_REGION_BASE_URI')
-    RITO_API_KEY = os.getenv('RITO_API_KEY')
+    TOKEN = os.environ.get('DISCORD_TOKEN') if os.getenv('DISCORD_TOKEN') == 'None' else os.getenv('DISCORD_TOKEN')
+    MONGO_URI = os.environ.get('MONGO_URI') if os.getenv('MONGO_URI') == 'None' else os.getenv('MONGO_URI')
+    RITO_URI = os.environ.get('RITO_BASE_URI') if os.getenv('RITO_BASE_URI') == 'None' else os.getenv('RITO_BASE_URI')
+    RITO_REGION_BASE_URI = os.environ.get('RITO_REGION_BASE_URI') if os.getenv('RITO_REGION_BASE_URI') == 'None' else os.getenv('RITO_REGION_BASE_URI')
+    RITO_API_KEY = os.environ.get('RITO_API_KEY') if os.getenv('RITO_API_KEY') == 'None' else os.getenv('RITO_API_KEY')
     requestHeader = getRequestHeaders(RITO_API_KEY)
     bot = commands.Bot(command_prefix='!')
 
@@ -109,6 +109,7 @@ def run_discord():
             await ctx.send(f"```\n{table}\n```")
 
             await ctx.send('Temporary data visualization solution. Improvements made in the future.')
+            await ctx.send('Data is collected every hour.')
 
     @bot.event
     async def on_command_error(ctx, error):
