@@ -5,10 +5,10 @@ A discord bot and web application that allows for stat tracking among friends an
 
 ### Version 1 
 
-- !list - list all users in the server
+- !stats - list all users in the server
 - !add - add user to the tracking stats
-- !leaders - list top 10 users in the discord
-- !stat [user] - find stats for specific user
+
+A nice feature that allows for people who constantly play together to compete againsts eachother and compare their statistics.
 
 ## Development
 
