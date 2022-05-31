@@ -1,5 +1,5 @@
 # Singed Tracker
-A discord bot, that allows for stat tracking among friends and gamers in a server for League of Legends
+A discord bot and web application that allows for stat tracking among friends and gamers in a server for League of Legends
 
 ## Commands
 
