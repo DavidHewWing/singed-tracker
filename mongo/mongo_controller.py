@@ -1,3 +1,4 @@
+from datetime import date
 from pprint import pprint
 
 from data.user import User
@@ -19,8 +20,10 @@ def addGuild(mongoClient: MongoClient, guildId: str):
         return False
     
     masterDB = mongoClient.master
+    historicalDB = mongoClient.historical
     try: 
         masterDB.create_collection(guildId)
+        historicalDB.create_collection(guildId)
         return True
     except Exception as e:
         pprint('An error occured while adding a guild: ' + str(e))
@@ -32,9 +35,12 @@ def deleteGuild(mongoClient: MongoClient, guildId: str):
         pprint('Guild with id: ' + guildId + ' does not exists.')
         return False
     masterDB = mongoClient.master
+    historicalDB = mongoClient.historical
     guildCollection = masterDB[guildId]
+    historicalCollection = historicalDB[guildId]
     try:
-        dropResult = guildCollection.drop()
+        guildDropResult = guildCollection.drop()
+        historicalDropResult = historicalCollection.drop()
         return True
     except Exception as e:
         pprint('An error occured when dropping Guild collection: ' + str(e))
@@ -99,7 +105,9 @@ def getAllGuilds(mongoClient: MongoClient):
 
 def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summonerName: str, championPlayed: str):
     masterDB = mongoClient.master
+    historicalDB = mongoClient.historical
     guildCollection = masterDB[guildId]
+    historicalCollection = historicalDB[guildId]
     championPlayedField = 'summoner.championsPlayed.' + championPlayed
     query = { 'summoner.summonerName' : summonerName } 
     update = { '$inc' : {
@@ -119,6 +127,29 @@ def updatePerformanceData(mongoClient: MongoClient, guildId: str, perfData, summ
         championPlayedField : 1
     } }
     user = guildCollection.update_one(query, update)
+    today = date.today()
+    todayDate = today.strftime("%d/%m/%Y")
+
+    historicalUpdate = {
+        'totDeaths': perfData.totDeaths,
+        'totKills': perfData.totKills,
+        'totAssists': perfData.totAssists,
+        'totCS': perfData.totCS,
+        'totDPS': perfData.totDPS,
+        'totDamageTaken': perfData.totDamageTaken,
+        'totTurretDamage': perfData.totTurretDamage,
+        'totGoldEarned': perfData.totGoldEarned,
+        'totVisionScore': perfData.totVisionScore,
+        'totHealsOnTeammates': perfData.totHealsOnTeammates,
+        'totTimeCCOthers': perfData.totTimeCCOthers,
+        'totShieldingOthers': perfData.totShieldingOthers,
+        'totGames': perfData.totGames,
+        'championPlayed' : championPlayed,
+        'summonerName': summonerName,
+        'dateRecorded': todayDate
+    }
+    historicalCollection.insert_one(historicalUpdate)
+
     return user
     
 def getAllUsersInGuild(mongoClient: MongoClient, guildId: str):
